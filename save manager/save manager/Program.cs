@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 using static System.Net.Mime.MediaTypeNames;
 
 
@@ -16,17 +17,19 @@ namespace SaveManager
 {
     
     public class _Directory
-
     {
-        
+        static string filePath = AppDomain.CurrentDomain.BaseDirectory;
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             
+            string cloneDir = filePath;
+
+
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Ayo horse4lunch made this jawn");
             Console.WriteLine("...");
-            Console.WriteLine("Oh yea its a Save Manager for High On Life 1.3");
+            Console.WriteLine("Oh yea its a Save Manager for High On Life 1.5");
             Console.WriteLine();
             Console.WriteLine();
             Console.WriteLine();
@@ -35,10 +38,10 @@ namespace SaveManager
             
             
             
-            string filePath = AppDomain.CurrentDomain.BaseDirectory;
+            
+            
 
-             
-            string cloneDir = filePath;
+            
             string[] dirContents = Directory.GetDirectories(filePath);
             for (int i = 0; i < dirContents.Length; i++)
             {
@@ -50,6 +53,11 @@ namespace SaveManager
             
             while (true)
             {
+
+
+
+
+
                 string[] saves = Directory.GetDirectories(filePath + "\\ManagedSaves");
                 for (int i = 0; i < saves.Length; i++)
                 {
@@ -63,28 +71,38 @@ namespace SaveManager
                 Random rng = new System.Random();
                 randomNumber = rng.Next(0, 4);
                 Console.WriteLine(selectFolder[randomNumber]);
+                Console.WriteLine("Press B to backup current save");
+                Console.WriteLine("Press R to load your backup file");
                 Console.ForegroundColor = ConsoleColor.White;
 
 
                 
                
                 
-                int userInput = Convert.ToInt32(Console.ReadLine());
-
-
-                if (userInput <= 50)
+               
+                if (Int32.TryParse(Console.ReadLine(), out int userInput) && userInput >= 0 && userInput <= 50)
                 {
-                    if (userInput >= 0)
-                    {
-                        DeleteDirectory(delDir, true);
-                        CloneDirectory(saves[userInput], cloneDir);
-                    }
-                    else
-                    {
-                        Console.WriteLine("poopoo");
-                    }
+                    DeleteDirectory(delDir, true);
+                    CloneDirectory(saves[userInput], cloneDir);
+
                 }
+               
+                
+                if (Console.ReadLine() == "b")
+                {
+                    DeleteDirectory(saves[0], true);
+                    CloneDirectory(delDir, saves[0]);
+                }
+                
+                if (Console.ReadLine() == "r")
+                {
+                    DeleteDirectory(delDir, true);
+                    CloneDirectory(saves[0], cloneDir);
+                }
+              
+
                 Console.WriteLine("Save loaded you may now load another save");
+                
             }
             
             
@@ -111,29 +129,46 @@ namespace SaveManager
         }
         public static void DeleteDirectory(string directoryName, bool checkDirectiryExist)
         {
-            bool checkManagedSaves;
+            bool isManagedSaves;
             string filePath = AppDomain.CurrentDomain.BaseDirectory;
-            if (filePath + "\\ManagedSaves" == directoryName)
+            string managedSaves = filePath + @"ManagedSaves";
+            if (managedSaves == directoryName)
             {
-                checkManagedSaves = true;
+                isManagedSaves = true;
+               
+                Console.WriteLine("The folder you tried to delete doesnt exist Please restart the application");
             }
-            else { checkManagedSaves = false; }
+            else if (managedSaves != directoryName)
+            { 
+                isManagedSaves = false;
+                
+                
 
+            }
+            else { return; }
 
+            
 
-            if (Directory.Exists(directoryName) && checkManagedSaves != false)
+            if (Directory.Exists(directoryName)&& isManagedSaves != true)
             {
                 Directory.Delete(directoryName, true);
             }
             else if (checkDirectiryExist)
-            { 
-                throw new SystemException("Directory you want to delete is not exist");
+            {
+                Console.WriteLine("The folder you tried to delete doesnt exist Please restart the application");
             }
             
             
         }
 
-        
+        public static void BackUpCurrentSave(string directoryName, bool checkDirectoryExist)
+        {
+            string[] dirContents = Directory.GetDirectories(filePath);
+            for (int i = 0; i < dirContents.Length; i++)
+            {
+
+            }
+        }
         
 
     }
